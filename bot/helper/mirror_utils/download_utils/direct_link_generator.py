@@ -403,15 +403,16 @@ def gdtot(url: str) -> str:
 
     if CRYPT is None:
         raise DirectDownloadLinkException("ERROR: CRYPT cookie not provided")
+    
+    new_gdtot = requests.get("https://new.gdtot.org/").url
 
     with requests.Session() as client:
         client.cookies.update({'crypt': CRYPT})
         res = client.get(url)
-        res = client.get(f"https://new.gdtot.eu/dld?id={url.split('/')[-1]}")
+        res = client.get(f"{new_gdtot}dld?id={url.split('/')[-1]}")
     matches = re.findall('gd=(.*?)&', res.text)
     try:
         decoded_id = b64decode(str(matches[0])).decode('utf-8')
     except:
         raise DirectDownloadLinkException("ERROR: Try in your broswer, mostly file not found!")
     return f'https://drive.google.com/open?id={decoded_id}'
-
